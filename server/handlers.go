@@ -175,13 +175,14 @@ func (s *Server) handleAuthorization(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if authReq.Connector != "" {
-		filtered := connectors[:0]
+		var filtered *storage.Connector
 		for _, c := range connectors {
 			if c.ID == authReq.Connector {
-				filtered = append(filtered, c)
+				filtered = &c
+				break
 			}
 		}
-		if len(filtered) == 0 {
+		if filtered == nil {
 			s.logger.Errorf("Connection with ID %s not defined", authReq.Connector)
 			s.renderError(w, http.StatusInternalServerError, "Connection "+authReq.Connector+"not found")
 			return
